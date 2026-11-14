@@ -18,6 +18,7 @@ void* routine(void* raw_args) {
       printf("Thread %c sold 1 ticket, %d left\n", *label, TICKETS);
     }
     //==============================> CRITICAL SECTION
+    // if(*label == 'B') break;              //but semaphore still suffer from deadlock !!
     sem_post(&sem);                       //increment the semaphore (UNLOCK)
   }
   return NULL;

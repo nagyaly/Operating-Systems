@@ -3,15 +3,13 @@
 #include <pthread.h>
 #define TCOUNT 3
 int TICKETS = 10;
-int flag = 0;
+pthread_mutex_t lock;              //mutex
 //------------------------------------------------------------
 void* routine(void* raw_args) {
   char* label = (char*)raw_args;
   while (TICKETS > 0) {
     sleep(1);                             // fake delay
-    while(flag == 1);                     //wait for flag to turn 0, notice the ;
-    // sleep(1);                             // this fake delay force 2 thrads entering the critical section 
-    flag = 1;                             //lock
+    pthread_mutex_lock(&lock);            //acquire the mutex (LOCK)
     //==============================> CRITICAL SECTION
     if (TICKETS > 0) {                    // GUARD
       sleep(1);                           // fake delay
@@ -19,8 +17,8 @@ void* routine(void* raw_args) {
       printf("Thread %c sold 1 ticket, %d left\n", *label, TICKETS);
     }
     //==============================> CRITICAL SECTION
-    // if(*label == 'C') break;              //kill Thread C on purpose, this produce deadlock !!
-    flag = 0;                             //unlock
+    // if(*label == 'B') break;              //but semaphore still suffer from deadlock !!
+    pthread_mutex_unlock(&lock);          // release the mutex (UNLOCK)
   }
   return NULL;
 }
@@ -28,6 +26,7 @@ void* routine(void* raw_args) {
 int main() {
   pthread_t tids[TCOUNT];
   char labels[TCOUNT];
+  pthread_mutex_init(&lock, NULL);        // initialize mutex
   for (int i = 0; i < TCOUNT; i++) {
     labels[i] = 'A' + i;
     pthread_create(&tids[i], NULL, routine, &labels[i]);
@@ -36,5 +35,6 @@ int main() {
     pthread_join(tids[i], NULL);
   }
   printf("TICKETS LEFT: %d\n", TICKETS);
+  pthread_mutex_destroy(&lock);           // destroy the mutex
   return 0;
 }
