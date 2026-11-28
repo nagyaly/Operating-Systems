@@ -7,6 +7,6 @@ int main(void) {
   for (i = 0; i < 500000000; i++) {
     sum += i % 5;
   }
-  printf("Sum: %ld\n", sum);
+  printf("Sum: %lu\n", sum);
   return 0;
 }

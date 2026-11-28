@@ -60,7 +60,7 @@ Expands the lifecycle into:
 
 Running -> Ready:
 1. quantum expired
-2. OS assigned different priority (process move from blocked to running directly)
+2. OS assigned different priority (process move from blocked to ready to running directly)
 
 Running -> Blocked:
 1. IO Request (scan, print, network access, file request)
